@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1"
+    />
+    <title>通讯录 · Concacts</title>
+    <style>
+      :root {
+        --bg: #f5f6f8;
+        --card: #fff;
+        --hair: #e5e5ea;
+        --text: #111;
+        --sub: #6b7280;
+        --tint: #007aff;
+        --danger: #ff3b30;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          "Segoe UI", Roboto, Helvetica, Arial, "PingFang SC",
+          "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: saturate(180%) blur(20px);
+        border-bottom: 1px solid var(--hair);
+      }
+      .nav h1 {
+        font-size: 17px;
+        font-weight: 600;
+        margin: 0;
+      }
+      .nav .left,
+      .nav .right {
+        position: absolute;
+        top: 0;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nav .left {
+        left: 12px;
+      }
+      .nav .right {
+        right: 12px;
+      }
+      .btn-ghost {
+        padding: 6px 10px;
+        border: 1px solid var(--hair);
+        border-radius: 10px;
+        background: #fff;
+        color: #333;
+        cursor: pointer;
+      }
+      .avatar-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid var(--hair);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .search-wrap {
+        padding: 12px;
+      }
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #fff;
+        border: 1px solid var(--hair);
+        border-radius: 12px;
+        padding: 8px 12px;
+        box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+      }
+      .search input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        background: transparent;
+      }
+      .section {
+        margin-top: 14px;
+      }
+      .section-title {
+        position: sticky;
+        top: 56px;
+        z-index: 10;
+        padding: 6px 16px;
+        font-size: 13px;
+        color: #6b7280;
+        background: var(--bg);
+      }
+      .card {
+        margin: 0 12px;
+        background: var(--card);
+        border-radius: 14px;
+        overflow: hidden;
+        border: 1px solid var(--hair);
+      }
+      .cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: #fff;
+        border-bottom: 1px solid var(--hair);
+      }
+      .cell:last-child {
+        border-bottom: none;
+      }
+      .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: 700;
+        flex: 0 0 36px;
+      }
+      .name {
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .sub {
+        font-size: 12px;
+        color: var(--sub);
+        margin-top: 2px;
+      }
+      .ops {
+        margin-left: auto;
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        background: var(--tint);
+        color: #fff;
+        font-weight: 600;
+      }
+      .btn.ghost {
+        background: #fff;
+        color: #111;
+        border: 1px solid var(--hair);
+      }
+      .btn.danger {
+        background: var(--danger);
+      }
+      .indexbar {
+        position: fixed;
+        right: 6px;
+        top: 100px;
+        bottom: 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #6b7280;
+        user-select: none;
+      }
+      .indexbar a {
+        color: inherit;
+        text-decoration: none;
+        padding: 2px 4px;
+        border-radius: 4px;
+      }
+      .indexbar a:hover {
+        background: rgba(0, 0, 0, 0.06);
+      }
+      .fab {
+        position: fixed;
+        right: 16px;
+        bottom: 24px;
+        z-index: 30;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: var(--tint);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 28px;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(0, 122, 255, 0.25);
+      }
+
+      .sheet {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.3);
+        display: none;
+        align-items: flex-end;
+        z-index: 40;
+      }
+      .panel {
+        width: 100%;
+        background: #f8f9fb;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.12);
+        padding: 12px;
+        border-top: 1px solid var(--hair);
+      }
+      .form {
+        display: grid;
+        gap: 10px;
+        padding: 0 8px 8px;
+      }
+      .form input,
+      .form textarea {
+        padding: 12px 12px;
+        border: 1px solid var(--hair);
+        border-radius: 12px;
+        background: #fff;
+        font-size: 16px;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* 个人资料专用 */
+      .me-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 8px;
+      }
+      .me-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1px solid var(--hair);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-weight: 700;
+      }
+      .tip {
+        font-size: 12px;
+        color: #6b7280;
+        margin: 0 8px 8px;
+      }
+
+      /* 合并面板样式 */
+      .merge-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        padding: 0 8px 8px;
+      }
+      .merge-col {
+        background: #fff;
+        border: 1px solid var(--hair);
+        border-radius: 12px;
+        padding: 10px;
+      }
+      .merge-col h4 {
+        margin: 6px 0 8px;
+        font-size: 14px;
+      }
+      .kv {
+        font-size: 14px;
+        color: #333;
+      }
+      .kv .k {
+        color: #6b7280;
+        margin-right: 4px;
+      }
+      .note {
+        font-size: 12px;
+        color: #6b7280;
+        padding: 0 8px;
+        margin-top: -4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <div class="left">
+        <div class="avatar-btn" id="openMe">我</div>
+      </div>
+      <h1>通讯录</h1>
+      <div class="right">
+        <button class="btn-ghost" id="logout">退出</button>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M21 21l-4.3-4.3"
+            stroke="#9ca3af"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+          <circle cx="11" cy="11" r="7" stroke="#9ca3af" stroke-width="2" />
+        </svg>
+        <input id="q" placeholder="搜索姓名或手机号" />
+      </div>
+    </div>
+
+    <div id="list"></div>
+    <div class="indexbar" id="indexbar"></div>
+    <div class="fab" id="fab">＋</div>
+
+    <!-- 新增/编辑联系人 -->
+    <div class="sheet" id="sheet">
+      <div class="panel">
+        <h3 id="sheetTitle">新增联系人</h3>
+        <div class="form">
+          <input id="f_name" placeholder="姓名" />
+          <input id="f_phones" placeholder="手机号（逗号/空格/顿号分隔多个）" />
+          <input id="f_email" placeholder="邮箱（可选）" />
+          <div class="row">
+            <button class="btn" id="sheetOK">确定</button>
+            <button class="btn ghost" id="sheetCancel">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 个人资料面板 -->
+    <div class="sheet" id="meSheet">
+      <div class="panel">
+        <h3>个人资料</h3>
+        <p class="tip">账号名不可修改；可更新姓名、邮箱、头像地址和签名。</p>
+        <div class="me-head">
+          <div class="me-avatar" id="meAvatarPreview">我</div>
+          <div
+            class="sub"
+            id="meUserInfo"
+            style="font-size: 13px; color: #6b7280"
+          ></div>
+        </div>
+        <div class="form">
+          <input id="me_full_name" placeholder="姓名 / 昵称" />
+          <input id="me_email" placeholder="邮箱" />
+          <input
+            id="me_avatar_url"
+            placeholder="头像 URL（可选，不填则使用首字母）"
+          />
+          <textarea
+            id="me_bio"
+            rows="3"
+            placeholder="个性签名（最多255字）"
+          ></textarea>
+          <div class="row">
+            <button class="btn" id="meSave">保存</button>
+            <button class="btn ghost" id="meClose">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 合并确认面板 -->
+    <div class="sheet" id="mergeSheet">
+      <div class="panel">
+        <h3>检测到同名联系人，是否合并？</h3>
+        <p class="note">
+          将合并手机号并保留已有邮箱（如已有为空则采用新邮箱）。
+        </p>
+        <div class="merge-grid">
+          <div class="merge-col">
+            <h4>已有联系人</h4>
+            <div class="kv">
+              <span class="k">姓名</span><span id="m_old_name">-</span>
+            </div>
+            <div class="kv">
+              <span class="k">手机号</span><span id="m_old_phones">-</span>
+            </div>
+            <div class="kv">
+              <span class="k">邮箱</span><span id="m_old_email">-</span>
+            </div>
+          </div>
+          <div class="merge-col">
+            <h4>待添加信息</h4>
+            <div class="kv">
+              <span class="k">姓名</span><span id="m_new_name">-</span>
+            </div>
+            <div class="kv">
+              <span class="k">手机号</span><span id="m_new_phones">-</span>
+            </div>
+            <div class="kv">
+              <span class="k">邮箱</span><span id="m_new_email">-</span>
+            </div>
+          </div>
+        </div>
+        <div class="row" style="padding: 0 8px 8px">
+          <button class="btn" id="mergeOK">合并</button>
+          <button class="btn ghost" id="mergeCancel">取消</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./config.js"></script>
+    <script src="./app.js" defer></script>
+    <script src="./me.js" defer></script>
+  </body>
+</html>
