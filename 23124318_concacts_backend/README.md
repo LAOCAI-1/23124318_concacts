@@ -78,7 +78,7 @@ http://localhost:5173/api
 
 ## 🧩 技术栈
 
-- **Node.js(v18+)**
+**Node.js(v18+)**
 
 **Express (v4+)**
 
@@ -110,3 +110,4 @@ http://localhost:5173/api
 
 MIT License © 2025 JiaYi Chen
 本项目仅用于课程作业与学习示例用途。
+
