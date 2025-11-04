@@ -7,6 +7,7 @@
 
 ## 📁 项目结构
 
+```text
 23124318_concacts_frontend/
 ├─ src/
 │ ├─ concacts.html # 主页面（通讯录界面）
@@ -17,6 +18,7 @@
 │ └─ assets/ # 图标、头像、UI 资源等
 ├─ README.md # 项目说明文件
 └─ codestyle.md # 前端代码规范文件
+```
 
 ---
 
